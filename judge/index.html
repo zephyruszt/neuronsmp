@@ -7,23 +7,166 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        
-        
-        
-
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-            <link rel="stylesheet" href="../assets/css/darcula-highlight.min.css">
-
+        <link rel="stylesheet" href="../assets/css/darcula-highlight.min.css">
         <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="../assets/css/dracula-ui.min.css">
         <link rel="stylesheet" href="../assets/css/mkdocs.min.css">
+        <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
 
-        
-            <link  rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
-        
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-                <script>hljs.initHighlightingOnLoad();</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
 
+        <style>
+          /* Ranking Component Dracula Styles */
+          .ranking-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+            background: rgba(40, 42, 54, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(68, 71, 90, 0.8);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+          }
+
+          .ranking-container h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+
+          .ranking-container p.subtitle {
+            color: #6272a4;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 24px;
+          }
+
+          .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            list-style: none;
+            position: relative;
+            padding: 0;
+            margin: 0;
+          }
+
+          .rank-item {
+            display: flex;
+            align-items: center;
+            background: #282a36;
+            border: 1px solid #44475a;
+            padding: 16px 20px;
+            border-radius: 12px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            color: #f8f8f2;
+          }
+
+          .rank-item:active {
+            cursor: grabbing;
+          }
+
+          .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #44475a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 16px;
+            flex-shrink: 0;
+            color: #f8f8f2;
+            transition: background 0.3s ease, color 0.3s ease;
+          }
+
+          /* Top 3 Dracula highlights */
+          .ranking-list li:nth-child(1) .rank-badge { background: #f1fa8c; color: #282a36; }
+          .ranking-list li:nth-child(2) .rank-badge { background: #8be9fd; color: #282a36; }
+          .ranking-list li:nth-child(3) .rank-badge { background: #ff79c6; color: #282a36; }
+
+          .item-text {
+            flex-grow: 1;
+            font-weight: 500;
+            font-size: 1rem;
+          }
+
+          .drag-icon {
+            color: #6272a4;
+            font-size: 1.2rem;
+            opacity: 0.7;
+          }
+
+          /* Drag placeholder */
+          .rank-item.placeholder {
+            opacity: 0.25;
+            border: 2px dashed #bd93f9;
+            background: rgba(189, 147, 249, 0.05);
+          }
+
+          /* Floating Ghost following cursor */
+          #dragGhost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+            background: rgba(40, 42, 54, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #bd93f9;
+            box-shadow: 0 12px 28px rgba(189, 147, 249, 0.35);
+            border-radius: 12px;
+            padding: 16px 20px;
+            transform: translate(-50%, -50%) scale(1.02);
+            color: #f8f8f2;
+          }
+
+          .submit-btn {
+            width: 100%;
+            margin-top: 24px;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
+            color: #282a36;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(189, 147, 249, 0.3);
+            transition: opacity 0.2s ease, transform 0.1s ease;
+          }
+
+          .submit-btn:hover {
+            opacity: 0.92;
+          }
+
+          .submit-btn:active {
+            transform: scale(0.99);
+          }
+
+          /* Submission feedback status box */
+          #statusMessage {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 24px;
+            color: #6272a4;
+            transition: color 0.3s ease;
+          }
+        </style>
 </head>
 
 <body class="drac-bg-black-secondary drac-text-grey-ternary drac-text drac-scrollbar-purple">
@@ -31,143 +174,239 @@
     <main class="d-flex">
 
         <!-- block sidebar -->
-            <nav id="sidebar" class="sidebar drac-bg-black">
-    <div class="custom-menu">
-        <button type="button" id="sidebarCollapse" class="btn btn-primary">
-            <i class="fa fa-bars"></i>
-            <span class="sr-only">Menu</span>
-        </button>
-    </div>
+        <nav id="sidebar" class="sidebar drac-bg-black">
+            <div class="custom-menu">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                    <i class="fa fa-bars"></i>
+                    <span class="sr-only">Menu</span>
+                </button>
+            </div>
 
-    <div class="p-4">
-        
+            <div class="p-4">
+                <div class="drac-text-center">
+                    <span class="drac-text drac-line-height drac-text-white">NeuronSMP</span>
+                </div>
 
-        <div class="drac-text-center">
-            
-                <span class="drac-text drac-line-height drac-text-white">NeuronSMP</span>
-            
-        </div>
+                <div class="drac-box flex-column">
+                    <ul class="dot-ul">
+                        <li><div class="dot-li drac-bg-cyan"></div></li>
+                        <li><div class="dot-li drac-bg-green"></div></li>
+                        <li><div class="dot-li drac-bg-orange"></div></li>
+                        <li><div class="dot-li drac-bg-pink"></div></li>
+                        <li><div class="dot-li drac-bg-purple"></div></li>
+                        <li><div class="dot-li drac-bg-red"></div></li>
+                        <li><div class="dot-li drac-bg-yellow"></div></li>
+                    </ul>
+                </div>
 
-        <div class="drac-box flex-column">
-            <ul class="dot-ul">
-                <li><div class="dot-li drac-bg-cyan"></div></li>
-                <li><div class="dot-li drac-bg-green"></div></li>
-                <li><div class="dot-li drac-bg-orange"></div></li>
-                <li><div class="dot-li drac-bg-pink"></div></li>
-                <li><div class="dot-li drac-bg-purple"></div></li>
-                <li><div class="dot-li drac-bg-red"></div></li>
-                <li><div class="dot-li drac-bg-yellow"></div></li>
-            </ul>
-        </div>
+                <hr class="drac-divider" />
 
-        <hr class="drac-divider" />
-
-        <!-- block menu -->
-        <ul class="mb-5 drac-list drac-list-none">
-            
-            <li class="drac-box">
-                <a href=".."
-                    class="
-                    drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
-                    Home
-                </a>
-            </li>
-            <li class="drac-box">
-                <a href="../about/"
-                    class="
-                    drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
-                    About
-                </a>
-            </li>
-            <li class="drac-box">
-                <a href="../buildchallenge/"
-                    class="
-                    drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">
-                    Build Challenge
-                </a>
-            </li>
-        </ul>
-        <!-- endblock -->
-    </div>
-</nav>
+                <!-- block menu -->
+                <ul class="mb-5 drac-list drac-list-none">
+                    <li class="drac-box">
+                        <a href=".." class="drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">Home</a>
+                    </li>
+                    <li class="drac-box">
+                        <a href="../about/" class="drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">About</a>
+                    </li>
+                    <li class="drac-box">
+                        <a href="../buildchallenge/" class="drac-anchor d-inline-flex align-items-center border-0 drac-text-purple--hover">Build Challenge</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         <!-- endblock -->
 
         <nav class="divider drac-bg-purple-cyan"></nav>
 
         <div class="content">
             <!-- block header -->
-                <header>
-    <nav class="navbar navbar-expand-xl drac-bg-purple">
-        <div class="container-fluid">
-            
-            <button class="navbar-toggler w-100 text-center" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsMenu"
-                aria-controls="navbarsMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <header>
+                <div class="container-fluid">
+                    <button class="navbar-toggler w-100 text-center" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsMenu" aria-controls="navbarsMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-            <div class="collapse navbar-collapse flex-column ml-auto" id="navbarsMenu">
-                <ul class="navbar-nav text-md-center">
-
-                    <!-- block preview -->
-                    <li class="nav-item">
-                            
-                    </li>
-                    <!--  endblock -->
-
-                    <!-- block search -->
-                    <li class="nav-item"><div role="search" class="search-box">
-	<form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-		<input type="text" name="q" class="drac-input drac-input-search drac-input-white drac-text-white drac-bg-black-secondary"
-		placeholder="Search docs" title="Type search term here" />
-	</form>
-</div>
-                    </li>
-                    <!--  endblock -->
-
-                    <!-- block source -->
-                    <li class="nav-item">
-                        
-                    </li>
-                    <!--  endblock -->
-
-                </ul>
-            </div>
-
-        </div>
-    </nav>
-</header>
+                    <div class="collapse navbar-collapse flex-column ml-auto" id="navbarsMenu">
+                        <ul class="navbar-nav text-md-center">
+                            <li class="nav-item">
+                                <div role="search" class="search-box">
+                                    <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+                                        <input type="text" name="q" class="drac-input drac-input-search drac-input-white drac-text-white drac-bg-black-secondary" placeholder="Search docs" title="Type search term here" />
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
             <!-- endblock -->
 
             <!-- block content -->
-                <section class="p-md-5 section-content">
-    <article>
-        <p><p>If you are reading this, you have chosen to become a build challenge judge. Thank you for helping us pick and rank the entries, best to worst.</p></p>
-    </article>
-</section>
+            <section class="p-md-5 section-content">
+                <article>
+                    <p>If you are reading this, you have chosen to become a build challenge judge. Thank you for helping us pick and rank the entries, best to worst.</p>
+
+                    <div class="ranking-container">
+                        <h2>Rank Your Top 8</h2>
+                        <p class="subtitle">Drag and drop the entries into your preferred order</p>
+
+                        <ul class="ranking-list" id="rankingList">
+                            <li class="rank-item" data-id="1"><span class="rank-badge">1</span><span class="item-text">Option Alpha</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="2"><span class="rank-badge">2</span><span class="item-text">Option Beta</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="3"><span class="rank-badge">3</span><span class="item-text">Option Gamma</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="4"><span class="rank-badge">4</span><span class="item-text">Option Delta</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="5"><span class="rank-badge">5</span><span class="item-text">Option Epsilon</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="6"><span class="rank-badge">6</span><span class="item-text">Option Zeta</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="7"><span class="rank-badge">7</span><span class="item-text">Option Eta</span><span class="drag-icon">☰</span></li>
+                            <li class="rank-item" data-id="8"><span class="rank-badge">8</span><span class="item-text">Option Theta</span><span class="drag-icon">☰</span></li>
+                        </ul>
+
+                        <button class="submit-btn" id="submitBtn">Submit Rankings</button>
+                        <div id="statusMessage"></div>
+                    </div>
+
+                    <!-- Floating Ghost Element -->
+                    <div id="dragGhost"></div>
+
+                    <script>
+                        const list = document.getElementById('rankingList');
+                        const ghost = document.getElementById('dragGhost');
+                        const statusMessage = document.getElementById('statusMessage');
+                        let draggedItem = null;
+                        let isDragging = false;
+
+                        function updateNumbers() {
+                            const items = list.querySelectorAll('.rank-item');
+                            items.forEach((item, index) => {
+                                item.querySelector('.rank-badge').textContent = index + 1;
+                            });
+                        }
+
+                        function startDrag(e, item) {
+                            draggedItem = item;
+                            isDragging = true;
+
+                            ghost.innerHTML = item.innerHTML;
+                            const rect = item.getBoundingClientRect();
+                            ghost.style.width = rect.width + 'px';
+
+                            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                            ghost.style.left = clientX + 'px';
+                            ghost.style.top = clientY + 'px';
+                            ghost.style.display = 'flex';
+
+                            item.classList.add('placeholder');
+                        }
+
+                        function moveDrag(e) {
+                            if (!isDragging || !draggedItem) return;
+
+                            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                            ghost.style.left = clientX + 'px';
+                            ghost.style.top = clientY + 'px';
+
+                            const siblings = [...list.querySelectorAll('.rank-item:not(.placeholder)')];
+                            const nextSibling = siblings.find(sibling => {
+                                const box = sibling.getBoundingClientRect();
+                                return clientY < box.top + box.height / 2;
+                            });
+
+                            if (nextSibling) {
+                                list.insertBefore(draggedItem, nextSibling);
+                            } else {
+                                list.appendChild(draggedItem);
+                            }
+                        }
+
+                        function endDrag() {
+                            if (!isDragging) return;
+                            isDragging = false;
+                            ghost.style.display = 'none';
+                            if (draggedItem) {
+                                draggedItem.classList.remove('placeholder');
+                                draggedItem = null;
+                            }
+                            updateNumbers();
+                        }
+
+                        list.querySelectorAll('.rank-item').forEach(item => {
+                            item.addEventListener('mousedown', (e) => startDrag(e, item));
+                            item.addEventListener('touchstart', (e) => startDrag(e, item), { passive: true });
+                        });
+
+                        window.addEventListener('mousemove', moveDrag);
+                        window.addEventListener('touchmove', moveDrag, { passive: true });
+                        window.addEventListener('mouseup', endDrag);
+                        window.addEventListener('touchend', endDrag);
+
+                        // Form Submission with transparent feedback reporting
+                        document.getElementById('submitBtn').addEventListener('click', async () => {
+                            const finalOrder = [...list.querySelectorAll('.rank-item')].map((item, index) => ({
+                                rank: index + 1,
+                                id: item.dataset.id,
+                                name: item.querySelector('.item-text').textContent
+                            }));
+
+                            const btn = document.getElementById('submitBtn');
+                            btn.textContent = 'Sending...';
+                            btn.disabled = true;
+
+                            // Transparent feedback: let the user know what's happening behind the scenes
+                            statusMessage.style.color = '#8be9fd'; // Dracula cyan
+                            statusMessage.textContent = 'Connecting to server...';
+
+                            try {
+                                // IMPORTANT: Replace neuronsmp-judge.YOUR-SUBDOMAIN.workers.dev with your actual Worker URL
+                                const workerUrl = 'https://neuronsmp-judge.zephyrgdyt.workers.dev';
+
+                                const response = await fetch(workerUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(finalOrder)
+                                });
+
+                                statusMessage.textContent = 'Server received packet, capturing metadata...';
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    statusMessage.style.color = '#50fa7b'; // Dracula green
+                                    statusMessage.textContent = 'Success! Thank you for voting.';
+                                    btn.textContent = 'Submitted Successfully';
+                                } else {
+                                    throw new Error(result.error || 'Server rejected the request.');
+                                }
+                            } catch (err) {
+                                console.error('Submission failed:', err);
+                                statusMessage.style.color = '#ff5555'; // Dracula red
+                                statusMessage.textContent = 'Failed to submit: ' + err.message;
+                                btn.textContent = 'Submit Rankings';
+                                btn.disabled = false;
+                            }
+                        });
+                    </script>
+                </article>
+            </section>
             <!-- endblock -->
 
             <!-- block footer -->
-                
-                    <footer>
-    <div class="d-flex flex-sm-row justify-content-between py-2 border-top drac-text-black drac-bg-cyan-green">
-        <a href="https://github.com/dracula/mkdocs" target="_blank" style="padding-left: 1%;"
-            class="footer-text drac-anchor drac-text-black drac-text-purple--hover">
-            Made with Dracula Theme for MkDocs
-        </a>
-    </div>
-</footer>
-                
+            <footer></footer>
             <!-- endblock -->
         </div>
 
     </main>
 
-        <script>var base_url = '..';</script>
-        <script src="../assets/js/jquery-3.3.1.slim.min.js"></script>
-        <script src="../assets/js/bootstrap.bundle.min.js"></script>
-        <script src="../assets/js/mkdocs.js"></script>
-			<script src="../search/main.js" defer></script>
+    <script>var base_url = '..';</script>
+    <script src="../assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/mkdocs.js"></script>
+    <script src="../search/main.js" defer></script>
 
 </body>
-
 </html>
