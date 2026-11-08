@@ -49,6 +49,35 @@
             margin-bottom: 24px;
           }
 
+          .form-group {
+            margin-bottom: 20px;
+          }
+
+          .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f8f8f2;
+            font-size: 0.95rem;
+          }
+
+          .form-control-custom {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #44475a;
+            background: #282a36;
+            color: #f8f8f2;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .form-control-custom:focus {
+            border-color: #bd93f9;
+            box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.2);
+          }
+
           .ranking-list {
             display: flex;
             flex-direction: column;
@@ -157,7 +186,6 @@
             transform: scale(0.99);
           }
 
-          /* Submission feedback status box */
           #statusMessage {
             margin-top: 16px;
             text-align: center;
@@ -249,7 +277,13 @@
 
                     <div class="ranking-container">
                         <h2>Rank Your Top 8</h2>
-                        <p class="subtitle">Drag and drop the entries into your preferred order</p>
+                        <p class="subtitle">Enter your name and drag the entries into your preferred order</p>
+
+                        <!-- Username Input Field -->
+                        <div class="form-group">
+                            <label for="judgeName">Your name:</label>
+                            <input type="text" id="judgeName" class="form-control-custom" placeholder="e.g. John Doe" required autocomplete="off">
+                        </div>
 
                         <ul class="ranking-list" id="rankingList">
                             <li class="rank-item" data-id="1"><span class="rank-badge">1</span><span class="item-text">Option Alpha</span><span class="drag-icon">☰</span></li>
@@ -273,6 +307,7 @@
                         const list = document.getElementById('rankingList');
                         const ghost = document.getElementById('dragGhost');
                         const statusMessage = document.getElementById('statusMessage');
+                        const judgeNameInput = document.getElementById('judgeName');
                         let draggedItem = null;
                         let isDragging = false;
 
@@ -344,24 +379,36 @@
                         window.addEventListener('mouseup', endDrag);
                         window.addEventListener('touchend', endDrag);
 
-                        // Form Submission with transparent feedback reporting
+                        // Form Submission with Username validation and transparent feedback
                         document.getElementById('submitBtn').addEventListener('click', async () => {
+                            const username = judgeNameInput.value.trim();
+                            if (!username) {
+                                statusMessage.style.color = '#ff5555'; // Dracula red
+                                statusMessage.textContent = 'Please type your username before submitting!';
+                                judgeNameInput.focus();
+                                return;
+                            }
+
                             const finalOrder = [...list.querySelectorAll('.rank-item')].map((item, index) => ({
                                 rank: index + 1,
                                 id: item.dataset.id,
                                 name: item.querySelector('.item-text').textContent
                             }));
 
+                            const payload = {
+                                username: username,
+                                rankings: finalOrder
+                            };
+
                             const btn = document.getElementById('submitBtn');
-                            btn.textContent = 'Sending...';
+                            btn.textContent = 'Submitting...';
                             btn.disabled = true;
 
-                            // Transparent feedback: let the user know what's happening behind the scenes
                             statusMessage.style.color = '#8be9fd'; // Dracula cyan
-                            statusMessage.textContent = 'Connecting to server...';
+                            statusMessage.textContent = 'Connecting to backend...';
 
                             try {
-                                // IMPORTANT: Replace neuronsmp-judge.YOUR-SUBDOMAIN.workers.dev with your actual Worker URL
+                                // REMINDER: Replace with your actual live Worker URL
                                 const workerUrl = 'https://neuronsmp-judge.zephyrgdyt.workers.dev';
 
                                 const response = await fetch(workerUrl, {
@@ -369,15 +416,15 @@
                                     headers: {
                                         'Content-Type': 'application/json'
                                     },
-                                    body: JSON.stringify(finalOrder)
+                                    body: JSON.stringify(payload)
                                 });
 
-                                statusMessage.textContent = 'Server received packet, capturing metadata...';
+                                statusMessage.textContent = 'Server received data, saving...';
                                 const result = await response.json();
 
                                 if (result.success) {
                                     statusMessage.style.color = '#50fa7b'; // Dracula green
-                                    statusMessage.textContent = 'Success! Thank you for voting.';
+                                    statusMessage.textContent = 'Success!';
                                     btn.textContent = 'Submitted Successfully';
                                 } else {
                                     throw new Error(result.error || 'Server rejected the request.');
